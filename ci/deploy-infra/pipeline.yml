@@ -1,0 +1,29 @@
+resources:
+  - name: automation
+    type: git
+    source:
+      uri: https://github.com/debanne/deploy-automation.git
+      branch: master
+jobs:
+  - name: deploy
+    plan:
+      - get: automation
+      - task: deploy
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: busybox
+          params:
+            COLOR: dummy
+            ENV_NAME: sandbox
+            VERSION: ((component-version))
+          run:
+            path: sh
+            args:
+              - "-c"
+              - |
+                echo Deploying '$COLOR' on $ENV_NAME v$VERSION...
+                sleep 10
+                echo "OK!"
