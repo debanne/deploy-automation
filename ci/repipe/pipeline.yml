@@ -3,30 +3,28 @@ resources:
     type: git
     icon: github
     source:
-      uri: https://github.com/debanne/deploy-automation.git
+      uri: git@github.com:debanne/deploy-automation.git
       branch: master
+      private_key: ((github-private-key))
   - name: config
     type: git
     icon: github
     source:
-      uri: https://github.com/debanne/deploy-config.git
+      uri: git@github.com:debanne/deploy-config.git
       branch: master
-  - name: image
-    type: registry-image
-    icon: docker
-    source:
-      repository: busybox
+      private_key: ((github-private-key))
 
 jobs:
   - name: repipe-sandbox
+    serial: true
     plan:
-      - in_parallel:
-        - get: automation
-        - get: image
-        - get: config
-     - set_pipeline:
-       file: config/sandbox/versions.yml
-       var_files:
-         - ci/deploy-infra/config/versions.yml
-       vars:
-         - env_name: sandbox
+      - get: automation
+      - get: config
+      - set_pipeline: deploy-sandbox
+        file: automation/ci/deploy-infra/pipeline.yml
+        var_files:
+          - automation/ci/deploy-infra/config/versions.yml
+          - config/sandbox/settings.yml
+        vars:
+          env_name: sandbox
+
