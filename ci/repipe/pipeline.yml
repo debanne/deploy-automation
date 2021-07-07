@@ -18,27 +18,15 @@ resources:
       repository: busybox
 
 jobs:
-  - name: deploy
+  - name: repipe-sandbox
     plan:
       - in_parallel:
         - get: automation
         - get: image
         - get: config
-      - task: deploy
-        image: image
-        config:
-          platform: linux
-          inputs:
-          - name: config
-          params:
-            COLOR: ((color))
-            ENV_NAME: ((env_name))
-            VERSION: ((component-version))
-          run:
-            path: sh
-            args:
-              - "-c"
-              - |
-                echo "Deploying '$COLOR' on $ENV_NAME v$VERSION..."
-                sleep 10
-                echo "OK!"
+     - set_pipeline:
+       file: config/sandbox/versions.yml
+       var_files:
+         - ci/deploy-infra/config/versions.yml
+       vars:
+         - env_name: sandbox
