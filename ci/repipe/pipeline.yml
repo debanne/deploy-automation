@@ -83,17 +83,17 @@ jobs:
       - get: automation-prod
       - get: config
       - get: image
+      - get: automation
+        resource: automation-prod
       - task: prepare-pipeline
         image: image
-        input_mapping:
-          automation: automation-prod
         params:
           ENV_NAME: prod
-        file: automation-prod/ci/repipe/tasks/prepare-pipeline.yml
+        file: automation/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-prod
-        file: automation-prod/ci/deploy-infra/pipeline.yml
+        file: automation/ci/deploy-infra/pipeline.yml
         var_files:
-          - automation-prod/ci/deploy-infra/config/versions.yml
+          - automation/ci/deploy-infra/config/versions.yml
           - config/prod/settings.yml
         vars:
           env_name: prod
