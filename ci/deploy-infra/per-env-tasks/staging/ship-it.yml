@@ -1,0 +1,20 @@
+---
+jobs:
+  - (( append ))
+  - name: ship-to-prod
+    plan:
+      - in_parallel:
+          - get: automation
+            passed: [ deploy ]
+      - put: prod-automation
+        params:
+          repository: automation
+
+resources:
+  - (( append ))
+  - name: prod-automation
+    type: git
+    source:
+      uri: git@github.com:debanne/deploy-automation.git
+      branch: prod
+      private_key: ((github-private-key))

@@ -11,7 +11,7 @@ resources:
     icon: github
     source:
       uri: git@github.com:debanne/deploy-automation.git
-      branch: stating
+      branch: staging
       private_key: ((github-private-key))
   - name: automation-prod
     type: git
@@ -41,28 +41,33 @@ jobs:
           - config/sandbox/settings.yml
         vars:
           env_name: sandbox
+          source_branch: master
+          next_env: staging
   - name: repipe-staging
-      serial: true
-      plan:
-        - get: automation
-        - get: config
-        - set_pipeline: deploy-staging
-          file: automation/ci/deploy-infra/pipeline.yml
-          var_files:
-            - automation/ci/deploy-infra/config/versions.yml
-            - config/staging/settings.yml
-          vars:
-            env_name: staging
+    serial: true
+    plan:
+      - get: automation-staging
+      - get: config
+      - set_pipeline: deploy-staging
+        file: automation-staging/ci/deploy-infra/pipeline.yml
+        var_files:
+          - automation-staging/ci/deploy-infra/config/versions.yml
+          - config/staging/settings.yml
+        vars:
+          env_name: staging
+          source_branch: staging
+          next_env: prod
   - name: repipe-prod
-      serial: true
-      plan:
-        - get: automation
-        - get: config
-        - set_pipeline: deploy-prod
-          file: automation/ci/deploy-infra/pipeline.yml
-          var_files:
-            - automation/ci/deploy-infra/config/versions.yml
-            - config/prod/settings.yml
-          vars:
-            env_name: prod
+    serial: true
+    plan:
+      - get: automation-prod
+      - get: config
+      - set_pipeline: deploy-prod
+        file: automation-prod/ci/deploy-infra/pipeline.yml
+        var_files:
+          - automation-prod/ci/deploy-infra/config/versions.yml
+          - config/prod/settings.yml
+        vars:
+          env_name: prod
+          source_branch: prod
 
