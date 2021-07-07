@@ -4,7 +4,7 @@ resources:
     icon: github
     source:
       uri: https://github.com/debanne/deploy-automation.git
-      branch: master
+      branch: ((source_branch))
   - name: config
     type: git
     icon: github

@@ -6,6 +6,20 @@ resources:
       uri: git@github.com:debanne/deploy-automation.git
       branch: master
       private_key: ((github-private-key))
+  - name: automation-staging
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:debanne/deploy-automation.git
+      branch: stating
+      private_key: ((github-private-key))
+  - name: automation-prod
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:debanne/deploy-automation.git
+      branch: prod
+      private_key: ((github-private-key))
   - name: config
     type: git
     icon: github
@@ -27,4 +41,28 @@ jobs:
           - config/sandbox/settings.yml
         vars:
           env_name: sandbox
+  - name: repipe-staging
+      serial: true
+      plan:
+        - get: automation
+        - get: config
+        - set_pipeline: deploy-staging
+          file: automation/ci/deploy-infra/pipeline.yml
+          var_files:
+            - automation/ci/deploy-infra/config/versions.yml
+            - config/staging/settings.yml
+          vars:
+            env_name: staging
+  - name: repipe-prod
+      serial: true
+      plan:
+        - get: automation
+        - get: config
+        - set_pipeline: deploy-prod
+          file: automation/ci/deploy-infra/pipeline.yml
+          var_files:
+            - automation/ci/deploy-infra/config/versions.yml
+            - config/prod/settings.yml
+          vars:
+            env_name: prod
 
