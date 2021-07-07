@@ -27,13 +27,25 @@ resources:
       uri: git@github.com:debanne/deploy-config.git
       branch: master
       private_key: ((github-private-key))
-
+  - name: image
+    type: registry-image
+    icon: docker
+    source:
+      repository: gstack/gk-ops
 jobs:
   - name: repipe-sandbox
     serial: true
     plan:
       - get: automation
       - get: config
+      - get: image
+      - task: prepare-pipeline
+        image: image
+        file: automation/ci/repipe/tasks/prepare-pipeline.yml
+        input_mapping:
+          - automation: automation
+        params:
+          - ENV_NAME: sandbox
       - set_pipeline: deploy-sandbox
         file: automation/ci/deploy-infra/pipeline.yml
         var_files:
@@ -48,6 +60,14 @@ jobs:
     plan:
       - get: automation-staging
       - get: config
+      - get: image
+      - task: prepare-pipeline
+        image: image
+        file: automation-staging/ci/repipe/tasks/prepare-pipeline.yml
+        input_mapping:
+          - automation: automation-staging
+        params:
+          - ENV_NAME: staging
       - set_pipeline: deploy-staging
         file: automation-staging/ci/deploy-infra/pipeline.yml
         var_files:
@@ -62,6 +82,14 @@ jobs:
     plan:
       - get: automation-prod
       - get: config
+      - get: image
+      - task: prepare-pipeline
+        image: image
+        file: automation-prod/ci/repipe/tasks/prepare-pipeline.yml
+        input_mapping:
+          - automation: automation-prod
+        params:
+          - ENV_NAME: prod
       - set_pipeline: deploy-prod
         file: automation-prod/ci/deploy-infra/pipeline.yml
         var_files:
