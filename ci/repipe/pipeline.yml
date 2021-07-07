@@ -41,6 +41,8 @@ jobs:
       - get: image
       - task: prepare-pipeline
         image: image
+        input_mapping:
+          automation: automation
         params:
           ENV_NAME: sandbox
         file: automation/ci/repipe/tasks/prepare-pipeline.yml
