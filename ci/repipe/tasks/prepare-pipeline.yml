@@ -8,7 +8,7 @@ outputs:
   - name: prepared-pipeline
 
 params:
-  ENV_NAME
+  ENV_NAME:
 
 run:
   path: automation/ci/repipe/tasks/prepare-pipeline.sh
