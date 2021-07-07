@@ -20,24 +20,90 @@ resources:
       uri: git@github.com:debanne/deploy-automation.git
       branch: prod
       private_key: ((github-private-key))
-  - name: config
-    type: git
-    icon: github
-    source:
-      uri: git@github.com:debanne/deploy-config.git
-      branch: master
-      private_key: ((github-private-key))
+#  - name: config
+#    type: git
+#    icon: github
+#    source:
+#      uri: git@github.com:debanne/deploy-config.git
+#      branch: master
+#      private_key: ((github-private-key))
   - name: image
     type: registry-image
     icon: docker
     source:
       repository: gstack/gk-ops
+  - name: sandbox-config
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:debanne/deploy-config.git
+      branch: master
+      private_key: |
+        ((github-private-key))
+      paths:
+        - sandbox/*
+  - name: staging-config
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:debanne/deploy-config.git
+      branch: master
+      private_key: |
+        ((github-private-key))
+      paths:
+        - staging/*
+  - name: prod-config
+    type: git
+    icon: github
+    source:
+      uri: git@github.com:debanne/deploy-config.git
+      branch: master
+      private_key: |
+        ((github-private-key))
+      paths:
+        - prod/*
+  - name: trigger-sandbox
+    type: semver
+    icon: play-circle-outline
+    source:
+      driver:      git
+      uri:         git@github.com:debanne/pipelines-compass.git
+      branch:      master
+      file:        triggers/deploy-sandbox-concourse-training
+      private_key: ((github-private-key))
+      git_user:    "((git-commit-name)) <((git-commit-email))>"
+      initial_version: 1.0.0
+  - name: trigger-staging
+    type: semver
+    icon: play-circle-outline
+    source:
+      driver:      git
+      uri:         git@github.com:debanne/pipelines-compass.git
+      branch:      master
+      file:        triggers/deploy-staging-concourse-training
+      private_key: ((github-private-key))
+      git_user:    "((git-commit-name)) <((git-commit-email))>"
+      initial_version: 1.0.0
+  - name: trigger-prod
+    type: semver
+    icon: play-circle-outline
+    source:
+      driver:      git
+      uri:         git@github.com:debanne/pipelines-compass.git
+      branch:      master
+      file:        triggers/deploy-prod-concourse-training
+      private_key: ((github-private-key))
+      git_user:    "((git-commit-name)) <((git-commit-email))>"
+      initial_version: 1.0.0
+
 jobs:
   - name: repipe-sandbox
     serial: true
     plan:
       - get: automation
       - get: config
+        resource: sandbox-config
+        trigger: true
       - get: image
       - task: prepare-pipeline
         image: image
@@ -55,11 +121,15 @@ jobs:
           env_name: sandbox
           source_branch: master
           next_env: staging
+      - put: trigger-sandbox
+        params: { bump: patch }
   - name: repipe-staging
     serial: true
     plan:
       - get: automation-staging
       - get: config
+        resource: staging-config
+        trigger: true
       - get: image
       - task: prepare-pipeline
         image: image
@@ -77,11 +147,15 @@ jobs:
           env_name: staging
           source_branch: staging
           next_env: prod
+      - put: trigger-staging
+        params: { bump: patch }
   - name: repipe-prod
     serial: true
     plan:
       - get: automation-prod
       - get: config
+        resource: prod-config
+        trigger: true
       - get: image
       - get: automation
         resource: automation-prod
@@ -98,4 +172,6 @@ jobs:
         vars:
           env_name: prod
           source_branch: prod
+      - put: trigger-prod
+        params: { bump: patch }
 
