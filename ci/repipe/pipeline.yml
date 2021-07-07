@@ -41,11 +41,9 @@ jobs:
       - get: image
       - task: prepare-pipeline
         image: image
-        file: automation/ci/repipe/tasks/prepare-pipeline.yml
-        input_mapping:
-          - automation: automation
         params:
-          - ENV_NAME: sandbox
+          ENV_NAME: sandbox
+        file: automation/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-sandbox
         file: automation/ci/deploy-infra/pipeline.yml
         var_files:
@@ -63,11 +61,11 @@ jobs:
       - get: image
       - task: prepare-pipeline
         image: image
-        file: automation-staging/ci/repipe/tasks/prepare-pipeline.yml
         input_mapping:
-          - automation: automation-staging
+          automation: automation-staging
         params:
-          - ENV_NAME: staging
+          ENV_NAME: staging
+        file: automation-staging/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-staging
         file: automation-staging/ci/deploy-infra/pipeline.yml
         var_files:
@@ -85,11 +83,11 @@ jobs:
       - get: image
       - task: prepare-pipeline
         image: image
-        file: automation-prod/ci/repipe/tasks/prepare-pipeline.yml
         input_mapping:
-          - automation: automation-prod
+          automation: automation-prod
         params:
-          - ENV_NAME: prod
+          ENV_NAME: prod
+        file: automation-prod/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-prod
         file: automation-prod/ci/deploy-infra/pipeline.yml
         var_files:
