@@ -116,7 +116,7 @@ jobs:
           ENV_NAME: sandbox
         file: automation/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-sandbox
-        file: automation/ci/deploy-infra/pipeline.yml
+        file: prepared-pipeline/assembled-pipeline.yml
         var_files:
           - automation/ci/deploy-infra/config/versions.yml
           - config/sandbox/settings.yml
@@ -142,7 +142,7 @@ jobs:
           ENV_NAME: staging
         file: automation-staging/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-staging
-        file: automation-staging/ci/deploy-infra/pipeline.yml
+        file: prepared-pipeline/assembled-pipeline.yml
         var_files:
           - automation-staging/ci/deploy-infra/config/versions.yml
           - config/staging/settings.yml
@@ -168,7 +168,7 @@ jobs:
           ENV_NAME: prod
         file: automation/ci/repipe/tasks/prepare-pipeline.yml
       - set_pipeline: deploy-prod
-        file: automation/ci/deploy-infra/pipeline.yml
+        file: prepared-pipeline/assembled-pipeline.yml
         var_files:
           - automation/ci/deploy-infra/config/versions.yml
           - config/prod/settings.yml
